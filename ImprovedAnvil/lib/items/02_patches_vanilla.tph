@@ -988,3 +988,17 @@ COPY_EXISTING ~sw1h66.itm~ ~override/sw1h66.itm~
   READ_BYTE  0x21 "ioffset"
   WRITE_BYTE 0x21 ("%ioffset%" BAND 0b10111111) // druid
   BUT_ONLY
+
+// patch magically created quarterstaff +3 for use in SPPR445 //
+COPY_EXISTING ~enstaff.itm~ ~override/enstaff.itm~
+  SAY DESC      @10356
+
+  WRITE_ASCIIE 0x10 ~misc56~ #8
+
+  LPF ALTER_ITEM_HEADER INT_VAR
+    header_type = 1
+    drained = 2
+    flag_break = 1
+  END
+
+  BUT_ONLY
