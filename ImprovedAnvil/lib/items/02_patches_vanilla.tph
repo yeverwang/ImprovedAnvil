@@ -726,9 +726,6 @@ COPY_EXISTING ~ax1h07.itm~ ~override/ax1h07.itm~
       parameter1 = 20
   END
 
-  // remove restriction by class (druid)
-  LPF DELETE_ITEM_EQEFFECT INT_VAR opcode_to_delete = 319 END
-
   // remove restriction for fighter/druids
   READ_BYTE 0x1f "kitusability"
   WRITE_BYTE 0x1f ("%kitusability%" BXOR 0b00010000)
@@ -1002,3 +999,25 @@ COPY_EXISTING ~enstaff.itm~ ~override/enstaff.itm~
   END
 
   BUT_ONLY
+
+// restore proper restrictions on usability of bows and axes for the shaman //
+ACTION_DEFINE_ARRAY items BEGIN
+  ~ax1h05~ ~ax1h06~ ~ax1h07~ ~ax1h08~ ~ax1h09~ ~ax1h12~ ~ax1h13~ ~ax1h15~ ~ax1h16~
+END
+
+ACTION_PHP_EACH  items AS null => item BEGIN
+  COPY_EXISTING ~%item%.itm~ ~override/%item%.itm~
+    // remove restriction for the druids by usability flag
+    READ_BYTE  0x21 usability
+    WRITE_BYTE 0x21 ("%usability%" ^^ BIT6)
+
+    // re-apply restriction via the 319 opcode
+    LPF ADD_ITEM_EQEFFECT INT_VAR
+      opcode = 319
+      target = 1
+      parameter1 = 11
+      parameter2 = 5
+      timing = 2
+    END
+  BUT_ONLY
+END
